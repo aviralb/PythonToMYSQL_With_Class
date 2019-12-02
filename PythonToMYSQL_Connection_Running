@@ -1,0 +1,98 @@
+import pymysql.cursors
+import pymysql.connections
+import traceback
+
+
+class SqlFunction(object):
+
+    def __init__(self):
+        self.host = "localhost"
+        self.user = "root"
+        self.password = "root"
+        self.db = "aviral"
+        self.connection = pymysql.connect(host=self.host,
+                                          user=self.user,
+                                          password=self.password,
+                                          db=self.db)
+        print("connection success ")
+
+    def add_user(self, number, name, company, location, salary):
+        """
+
+        :param number:
+        :param name:
+        :param company:
+        :param location:
+        :param salary:
+        :return:
+        """
+        connection = pymysql.connect(host=self.host,
+                                     user=self.user,
+                                     password=self.password,
+                                     db=self.db)
+        mycursor = connection.cursor()
+        query = "INSERT INTO data (" + number + ", " + name + "," + company + "," + location + \
+                "," + salary + ")" \
+                               " VALUES (%s,%s,%s,%s,%s)"
+        val = (number, name, company, location, salary)
+        mycursor.execute(query, val)
+        connection.commit()
+        return 'success'
+
+    def showall(self):
+        """
+
+        :return:
+       """
+        try:
+            mycursor = self.connection.cursor()
+            mycursor.execute("select * from data")
+            rows = mycursor.fetchall()
+            for row in rows:
+                print(row)
+            # connection.commit()
+            self.connection.commit()
+            self.connection.close()
+            return 'success'
+        except Exception as e:
+            print(str(e))
+            traceback.print_exc()
+
+    def remove_user(self, delete_record):
+        """
+
+        :param delete_record:
+        :return:
+        """
+        connection = pymysql.connect(host=self.host,
+                                     user=self.user,
+                                     password=self.password,
+                                     db=self.db)
+        mycursor = connection.cursor()
+        statement = "DELETE FROM data WHERE number = " + delete_record
+        mycursor.execute(statement)
+        return "data is deleted successfully "
+
+    def update_user(self, name, location):
+        """
+
+        :param name:
+        :param location:
+        :return:
+        """
+        connection = pymysql.connect(host=self.host,
+                                     user=self.user,
+                                     password=self.password,
+                                     db=self.db)
+        mycursor = connection.cursor()
+        statement = "UPDATE data SET NAME = " + name + "WHERE location = " + location + ";"
+        mycursor.execute(statement)
+        return "data is updated successfully "
+
+
+if __name__ == '__main__':
+    object_class = SqlFunction()
+    object_class.showall()
+    # object_class.add_user()
+    # object_class.removeuser()
+    # object_class.updateuser()
